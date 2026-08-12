@@ -307,3 +307,31 @@ The server is responsible for:
 - Sensitive operations
 - Server-side validation
 - Private API credentials
+
+## 13. Architectural Rules
+
+1. UI components should remain focused on presentation and interaction.
+2. Business logic should not be duplicated across components.
+3. Database operations should be isolated from UI components.
+4. Private credentials must remain server-side.
+5. Authentication and authorization must be checked before protected
+   operations.
+6. Existing services should be reused before creating new ones.
+7. New architectural patterns should not be introduced without a
+   clear reason.
+8. Avoid unnecessary abstractions.
+9. Keep responsibilities separated.
+10. Changes to the architecture should be documented.
+
+
+## 14. Future Considerations
+
+The following may be considered in future versions:
+
+- Caching layer
+- Background processing
+- Advanced analytics
+- Additional external integrations
+
+These are not part of the current architecture and should not be
+implemented unless explicitly required.
