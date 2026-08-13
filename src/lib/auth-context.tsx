@@ -1,19 +1,11 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
-import { authService } from "@/services/authService";
+import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
+import * as authStore from "@/lib/auth-store";
 import type { Credentials, RegisterInput, Session } from "@/types";
 
 interface AuthContextValue {
   session: Session | null;
-  loading: boolean;
   isAuthenticated: boolean;
   login: (credentials: Credentials) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
@@ -24,48 +16,21 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setSession(authService.getSession());
-    setLoading(false);
-  }, []);
-
-  const login = useCallback(async (credentials: Credentials) => {
-    const next = await authService.login(credentials);
-    setSession(next);
-  }, []);
-
-  const register = useCallback(async (input: RegisterInput) => {
-    const next = await authService.register(input);
-    setSession(next);
-  }, []);
-
-  const logout = useCallback(async () => {
-    await authService.logout();
-    setSession(null);
-  }, []);
-
-  const updateSemester = useCallback((semester: number) => {
-    setSession((current) => {
-      if (!current) return current;
-      const updated: Session = { ...current, semester };
-      authService.setSession(updated);
-      return updated;
-    });
-  }, []);
+  const session = useSyncExternalStore(
+    authStore.subscribe,
+    authStore.getSnapshot,
+    authStore.getServerSnapshot,
+  );
 
   return (
     <AuthContext.Provider
       value={{
         session,
-        loading,
         isAuthenticated: session !== null,
-        login,
-        register,
-        logout,
-        updateSemester,
+        login: authStore.login,
+        register: authStore.register,
+        logout: authStore.logout,
+        updateSemester: authStore.updateSemester,
       }}
     >
       {children}

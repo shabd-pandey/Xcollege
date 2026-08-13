@@ -6,16 +6,16 @@ import { useAuth } from "@/lib/auth-context";
 import { SemesterBanner } from "@/components/layout/SemesterBanner";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (!isAuthenticated) {
       router.replace("/login");
     }
-  }, [loading, isAuthenticated, router]);
+  }, [isAuthenticated, router]);
 
-  if (loading || !isAuthenticated) {
+  if (!isAuthenticated) {
     return (
       <main className="flex flex-1 items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center gap-3 text-gray-400">
